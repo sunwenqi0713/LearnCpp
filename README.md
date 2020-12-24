@@ -187,6 +187,8 @@ TCP提供了连接的一端在结束它的发送后还能接收来自另一端�
 
 ## 7.Golang的mutx怎么使用？
 
+Mutex 用于提供一种加锁机制（Locking Mechanism），可确保在某时刻只有一个协程在临界区运行，以防止出现竞态条件。
+
 Go中使用sync.Mutex类型实现mutex(排他锁、互斥锁)。
 
 通过sync.Mutex类型的两个方法sync.Lock()和sync.Unlock()函数来完成的，前者用于获取sync.Mutex锁，后者用于释放sync.Mutex锁。sync.Mutex一旦被锁住，其它的Lock()操作就无法再获取它的锁，只有通过Unlock()释放锁之后才能通过Lock()继续获取锁。
@@ -250,11 +252,17 @@ for循环里面的defer：会打开大量的文件。改进方法： defer 移�
 
 ## 15.select可以用于什么？
 
+select 语句用于在多个发送/接收信道操作中进行选择。select语句会一直阻塞，直到发送/接收操作准备就绪。如果有多个信道操作准备完毕，select会随机地选取其中之一执行。该语法与 switch 类似，所不同的是，这里的每个case语句都是信道操作。
+
 select 是 Go 中的一个控制结构，类似于用于通信的 switch 语句。每个 case 必须是一个通信操作，要么是发送要么是接收。select 随机执行一个可运行的 case。如果没有 case 可运行，它将阻塞，直到有 case 可运行。一个默认的子句应该总是可运行的。
 
 ## 16.context包的用途
 
-专门用来简化对于处理单个请求的多个 goroutine 之间与请求域的数据、取消信号、截止时间等相关操作，这些操作可能涉及多个 API 调用。
+context 包定义了一个 Context （上下文）类型，可以在 Api 之间和进程之间传递信息，还提供了超时（timeout）和取消（cancel）机制。
+
+Go 标准库中，database/sql，net，net/http 等包中都使用了 Context。
+
+在 Go 应用开发中，一般用于请求链路中传递上下文信息，控制子 goroutine 等场景中。
 
 ## 17.client如何实现长连接
 
@@ -267,7 +275,7 @@ select 是 Go 中的一个控制结构，类似于用于通信的 switch 语句�
 * 使用channel同步
 * 使用sync.WaitGroup
 
-## 19.slice,len,cap,共享，扩容
+## 19.slice,len,cap,共享,扩容
 
 * slice：一个指向底层的数组的指针结构体。
 * len：slice中元素的数量。
@@ -398,6 +406,14 @@ Raft通过领导方法实现共识。该集群只有一个当选的领导者，�
 * chanel引起的泄露：发送不接收（需要一种机制去通知发送者，Go 可以通过 channel 的关闭向所有的接收者发送广播信息，例如通过 select 实现 2 个 channel 的同时处理。当异常发生时，将进入 <-done 分支，实现 goroutine 退出）和接收不发送（发送完成后一定要记得关闭 channel），向 nil channel 发送和接收数据都将会导致阻塞。这种情况可能在我们定义 channel 时忘记初始化的时候发生。
 * 因为 Go 有 defer 的存在，这个问题还是非常容易解决的，只要记得在 Lock 的时候，记住 defer Unlock 即可。
 * WaitGroup 和锁有所差别，它类似 Linux 中的信号量，可以实现一组 goroutine 操作的等待。使用的时候，如果设置了错误的任务数，也可能会导致阻塞，导致泄露发生。建议是，尽量不要一次设置全部任务数，即使数量非常明确的情况。因为在开始多个并发任务之间或许也可能出现被阻断的情况发生。最好是尽量在任务启动时通过 wg.Add(1) 的方式增加。
+
+## 36.make和new
+
+
+
+## 37.TODO
+
+
 
 
 
